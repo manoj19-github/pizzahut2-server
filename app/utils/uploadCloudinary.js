@@ -7,7 +7,6 @@ const uploadCloudinary=async(filepath)=>{
       resource_type:"auto"
     })
     const {secure_url}=uploadedFile
-    console.log("secure_url",secure_url)
     return secure_url
   }catch(err){
     console.log(`cloudinary uploading error in uploadCloudinary page`,err)

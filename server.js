@@ -23,6 +23,7 @@ const cartRoutes=require("./routes/cartRoutes")
 const orderRoutes=require("./routes/orderRoutes")
 const productRoutes=require("./routes/productRoutes")
 const dashboardRoutes=require("./routes/admin/dashboardRoutes")
+const slideRoutes=require("./routes/slideRoutes")
 
 // middlewares
 
@@ -62,6 +63,8 @@ app.use("/api/admin",dashboardRoutes)
 app.use("/api/cart",cartRoutes)
 app.use("/api",productRoutes)
 app.use("/api",orderRoutes)
+app.use("/api",slideRoutes)
+
 
 
 

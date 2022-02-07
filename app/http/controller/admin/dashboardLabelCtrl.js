@@ -2,12 +2,45 @@ const Order=require("../../../models/orderModel")
 const Cart=require("../../../models/cartModel")
 const User=require("../../../models/userModel")
 const Product=require("../../../models/productModel")
+const Slide=require("../../../models/slideModel")
+const uploadCloudinary=require("../../../utils/uploadCloudinary")
 const dashboardLabelCtrl=()=>{
   return{
+    async delSlide(req,res){
+      try{
+        const slideDeleted=await Slide.findByIdAndDelete(req.body.slideId)
+        return res.status(201).json({status:true,slides:slideDeleted})
+
+      }catch(err){
+        console.log("error in delSlide",err)
+        return res.status(501).json({status:false})
+      }
+    },
+    async setSlide(req,res){
+      try{
+        if(req.file){
+          const filePath=await uploadCloudinary(req.file.path)
+          const newSlide=await Slide.create({slideImage:filePath})
+          return res.status(201).json({
+            status:true,
+            slide:newSlide
+          })
+        }
+        return res.status(501).json({
+          status:false
+        })
+      }catch(err){
+        console.log("error in slide ctrl ",err)
+        return res.status(501).json({
+          status:false
+        })
+      }
+
+    },
     async getOrders(req,res){
       try{
         var orders=await Order.find({status:{$nin:["order_delivered","order_rejected"]}},
-          {customerId:1,name:1,product:1,orderPrice:1,phone:1,email:1,paymentStatus:1,paymentType:1,
+          {customerId:1,name:1,product:1,address:1,orderPrice:1,phone:1,email:1,paymentStatus:1,paymentType:1,
             status:1,createdAt:1
           },{
             $sort:{createdAt:-1}
@@ -78,11 +111,11 @@ const dashboardLabelCtrl=()=>{
       try{
         const lastFiveDays=await Order.aggregate([{
           $group:{
-            _id:{$dateToString:{format:"%d-%m-%Y",date:"$createdAt"}},
+            _id:{$dateToString:{format:"%Y-%m-%d",date:"$createdAt"}},
             totalOrder:{$sum:"$orderPrice"}
           }
         },{
-          $sort:{createdAt:-1}
+          $sort:{_id:1}
         },{
           $limit:5
         }])
@@ -92,11 +125,11 @@ const dashboardLabelCtrl=()=>{
           },
           {
           $group:{
-            _id:{$dateToString:{format:"%d-%m-%Y",date:"$createdAt"}},
+            _id:{$dateToString:{format:"%Y-%m-%d",date:"$createdAt"}},
             totalOrder:{$sum:"$orderPrice"}
           }
         },{
-          $sort:{createdAt:-1}
+          $sort:{_id:1}
         },
         {
           $limit:5
