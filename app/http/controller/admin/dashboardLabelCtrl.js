@@ -6,6 +6,22 @@ const Slide=require("../../../models/slideModel")
 const uploadCloudinary=require("../../../utils/uploadCloudinary")
 const dashboardLabelCtrl=()=>{
   return{
+    async orderStatusChange(req,res){
+      const eventEmitter=req.app.get("eventEmitter")
+      try{
+        const orderChange=await Order.findByIdAndUpdate(req.body.orderId,
+          {status:req.body.newStatus},
+          {new:true})
+          eventEmitter.emit("orderUpdated",orderChange)
+          return res.status(201).
+            json({status:true,updatedOrder:orderChange})
+
+      }catch(err){
+        console.log(`orderStatusChangeCtrl change`,err)
+        return res.status(201).
+          json({status:false})
+      }
+    },
     async delSlide(req,res){
       try{
         const slideDeleted=await Slide.findByIdAndDelete(req.body.slideId)
@@ -26,9 +42,6 @@ const dashboardLabelCtrl=()=>{
             slide:newSlide
           })
         }
-        return res.status(501).json({
-          status:false
-        })
       }catch(err){
         console.log("error in slide ctrl ",err)
         return res.status(501).json({

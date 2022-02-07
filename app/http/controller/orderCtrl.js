@@ -10,7 +10,7 @@ const orderCtrl=()=>{
     async getOrder(req,res){
       try{
         const orderData=await Order.findOne({$and:[{user:req.user._id},{_id:req.params.productId}]},
-          {address:1,city:1,name:1,orderPrice:1,paymentType:1,paymentStatus:1,status:1,createdAt:1},
+          {address:1,city:1,name:1,orderPrice:1,paymentType:1,paymentStatus:1,status:1,createdAt:1,updatedAt:1},
         )
         return res.status(201).json({status:true,products:orderData})
       }catch(err){
@@ -38,6 +38,7 @@ const orderCtrl=()=>{
 
     },
     async payment(req,res){
+      const eventEmitter=req.app.get("eventEmitter")
 
       try{
       console.log("this body",req.body)
@@ -103,6 +104,7 @@ const orderCtrl=()=>{
           })
           const orderPlaced=await newOrder.save()
           const cartProduct=await Cart.findOneAndDelete({user:req.user._id})
+          eventEmitter.emit("orderPlaced",orderPlaced)
           console.log("new order",orderPlaced)
           // order message send through mail
           const orderMessage1={
@@ -185,6 +187,7 @@ const orderCtrl=()=>{
             paymentType:paymentOption,
           })
           const orderPlaced=await newOrder.save()
+          eventEmitter.emit("orderPlaced",orderPlaced)
           const cartProduct=await Cart.findOneAndDelete({user:req.user._id})
 
           const orderMessage2={

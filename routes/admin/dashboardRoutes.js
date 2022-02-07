@@ -11,6 +11,7 @@ Router.get("/dashboard/products",isAdmin,dashboardLabelCtrl().getProducts)
 Router.get("/dashboard/orders",dashboardLabelCtrl().getOrders)
 Router.post("/dashboard/addSlide",uploads.single("slide"),dashboardLabelCtrl().setSlide)
 Router.post("/dashboard/delSlide",dashboardLabelCtrl().delSlide)
+Router.post("/order/statusChange",dashboardLabelCtrl().orderStatusChange)
 
 
 module.exports=Router

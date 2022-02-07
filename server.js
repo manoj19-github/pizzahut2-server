@@ -4,6 +4,7 @@ const mongoose=require("mongoose")
 const passport=require("passport")
 const connDB=require("./app/config/dbConn")
 const MongoStore=require("connect-mongo")
+const Emitter=require("events")
 
 
 
@@ -65,6 +66,10 @@ app.use("/api",productRoutes)
 app.use("/api",orderRoutes)
 app.use("/api",slideRoutes)
 
+// app events
+const eventEmitter=new Emitter()
+app.set("eventEmitter",eventEmitter)
+
 
 
 
@@ -81,4 +86,34 @@ const server=app.listen(PORT,async()=>{
   // DATABASE CONNECTION
   await connDB()
   console.log(`server is running on port ${process.env.PORT}`)
+})
+
+// socket io connection
+const io=require("socket.io")(server,{
+  pingTimeout:120000,
+  cors:{
+    origin:process.env.CLIENT_SERVER
+  }
+})
+io.on("connection",(socket)=>{
+  // join
+  console.log(`connected to socket io on pizza hut`)
+  socket.on("join",(orderId)=>{
+    socket.join(orderId)
+    console.log("user join ",orderId)
+  })
+})
+
+// event work
+eventEmitter.on("orderUpdated",(data)=>{
+  io.to(`order_${data.id}`).emit("orderUpdated",data)
+  console.log("new order updated")
+})
+eventEmitter.on("orderPlaced",(orderData)=>{
+  io.to("adminRoom").emit("orderPlaced",orderData)
+  console.log("new order placed")
+})
+
+eventEmitter.on("paymentUpdated",(data)=>{
+  io.to(`order_${data.id}`).emit("paymentUpdated",data)
 })
