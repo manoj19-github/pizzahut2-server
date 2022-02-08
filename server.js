@@ -69,6 +69,7 @@ app.use("/api",slideRoutes)
 // app events
 const eventEmitter=new Emitter()
 app.set("eventEmitter",eventEmitter)
+app.set("trust proxy", 1)
 
 
 
