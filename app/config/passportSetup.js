@@ -18,7 +18,7 @@ passport.use(new LocalStrategy({usernameField:"email"},async(email,password,done
 }))
 
 passport.use(new GoogleStrategy({
-  callbackURL:"/api/auth/google/callback",
+  callbackURL:process.env.GOOGLE_CALLBACK_URL,
   clientID:process.env.CLIENT_ID,
   clientSecret:process.env.CLIENT_SECRET
 },async(req,accessToken,refreshToken,profile,done)=>{
