@@ -43,7 +43,7 @@ const orderCtrl=()=>{
       const eventEmitter=req.app.get("eventEmitter")
 
       try{
-      console.log("this body",req.body)
+
       switch(req.body.orderData.option){
         case 1:{
           const {token,orderData}=req.body
@@ -78,7 +78,7 @@ const orderCtrl=()=>{
           },{
             idempotencyKey,
           })
-          console.log("status charge",charge)
+
           const newOrder=new Order({
             customerId:req.user._id,
             name:deliveryAddress.name,

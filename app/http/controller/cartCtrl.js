@@ -59,7 +59,7 @@ const cartCtrl=()=>{
       }
     },
     async deleteCart(req,res){
-      console.log("cartId",req.body.cartId)
+      
       try{
         const cartExists=await cartModel.findOne({user:req.user._id})
         if(cartExists){
@@ -80,7 +80,7 @@ const cartCtrl=()=>{
             })
         }
       }catch(err){
-        console.log(err)
+        
         return res.status(501).json({
           status:false,
           message:"cart not deleted"
@@ -96,7 +96,7 @@ const cartCtrl=()=>{
           select:"name image"
         })
         if(cartExists){
-        console.log("cartExists",cartExists)
+        
           return res.status(201).json({
             status:true,
             cartProduct:cartExists
@@ -133,7 +133,7 @@ const cartCtrl=()=>{
           select:"name image"
         })
 
-        console.log("updatedCart",updatedCart)
+        
         if(updatedCart){
           return res.status(201).json({
             status:true,
@@ -143,7 +143,7 @@ const cartCtrl=()=>{
 
       }
     }catch(err){
-      console.log("error in editcart " , err)
+      
       return res.status(501).json({
         status:false,
         cartProduct:null,
