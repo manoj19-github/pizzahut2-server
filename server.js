@@ -27,11 +27,11 @@ const dashboardRoutes=require("./routes/admin/dashboardRoutes")
 const slideRoutes=require("./routes/slideRoutes")
 
 // middlewares
-
+app.set("trust proxy", 1)
 app.use(
   session({
     secret:process.env.COOKIE_SECRET,
-    resave: false,
+     resave: true,
     saveUninitialized: false,
     key:"User_id",
     store:MongoStore.create({
@@ -40,7 +40,11 @@ app.use(
       autoRemoveInterval:20,
       collectionName:"mysession"
     }),
-    cookie:{maxAge:1000*60*60},
+    cookie: {
+     sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
+     secure: process.env.NODE_ENV === "production", // must be true if sameSite='none'
+     maxAge:1000*60*60
+   },
   })
 )
 app.use(passport.initialize())
@@ -69,7 +73,7 @@ app.use("/api",slideRoutes)
 // app events
 const eventEmitter=new Emitter()
 app.set("eventEmitter",eventEmitter)
-app.set("trust proxy", 1)
+
 
 
 
