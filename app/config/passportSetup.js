@@ -18,13 +18,15 @@ passport.use(new LocalStrategy({usernameField:"email"},async(email,password,done
 }))
 
 passport.use(new GoogleStrategy({
-  callbackURL:process.env.GOOGLE_CALLBACK_URL,
+  callbackURL:"/api/auth/google/callback",
   clientID:process.env.CLIENT_ID,
   clientSecret:process.env.CLIENT_SECRET
 },async(req,accessToken,refreshToken,profile,done)=>{
   try{
+
     const user=await User.findOne({googleId:profile.id})
     if(user){
+      console.log("google user",user)
       return done(null,user)
     }else{
       const newUser=await User.create({

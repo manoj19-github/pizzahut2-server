@@ -24,14 +24,18 @@ Router.get("/google/callback",passport.authenticate("google",{
 Router.get("/login/google",passport.authenticate("google",{
   scope:["email","profile"]
 }))
-Router.get("/login/success",isLoggedIn,(req,res)=>{
-  const authUser={
-    id:req.user._id,
-    name:req.user.name,
-    email:req.user.email,
-    isAdmin:req.user.isAdmin
+Router.get("/login/success",(req,res)=>{
+  var authUser
+  if(req.user){
+    authUser={
+      id:req.user._id,
+      name:req.user.name,
+      email:req.user.email,
+      isAdmin:req.user.isAdmin
+    }
+    return res.status(201).json({message:"user logged In ",status:true,authUser})
   }
-  return res.status(201).json({message:"user logged In ",status:true,authUser})
+  return res.status(501).json({status:false})
 })
 
 Router.post("/forgot-password",sendConfirmationCtrl().sendConfirmation)
