@@ -1,9 +1,11 @@
 const Order=require("../../models/orderModel")
 const Cart=require("../..//models/cartModel")
+const User=require("../..//models/userModel")
 const uuid=require("uuid").v4
 const stripe=require("stripe")(`${process.env.STRIPE_SECRET_KEY}`)
 const mailTransporter=require("../../config/mailConfig")
 const twilioClient=require("twilio")(process.env.ACCOUNT_SID,process.env.AUTH_TOKEN)
+
 
 const orderCtrl=()=>{
   return{
@@ -102,8 +104,12 @@ const orderCtrl=()=>{
                 description:charge.description
             }
           })
-          const orderPlaced=await newOrder.save()
+          var orderPlaced=await newOrder.save()
           const cartProduct=await Cart.findOneAndDelete({user:req.user._id})
+          orderPlaced=await User.populate(orderPlaced,{
+            path:"customerId",
+            select:"name email"
+          })
           eventEmitter.emit("orderPlaced",orderPlaced)
           console.log("new order",orderPlaced)
           // order message send through mail

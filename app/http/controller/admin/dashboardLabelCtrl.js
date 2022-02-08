@@ -9,9 +9,17 @@ const dashboardLabelCtrl=()=>{
     async orderStatusChange(req,res){
       const eventEmitter=req.app.get("eventEmitter")
       try{
-        const orderChange=await Order.findByIdAndUpdate(req.body.orderId,
-          {status:req.body.newStatus},
-          {new:true})
+        var orderChange=null
+        if(req.body.newStatus=="order_delivered"){
+          orderChange=await Order.findByIdAndUpdate(req.body.orderId,
+            {status:req.body.newStatus,paymentStatus:true},
+            {new:true})
+        }else{
+          orderChange=await Order.findByIdAndUpdate(req.body.orderId,
+            {status:req.body.newStatus},
+            {new:true})
+        }
+
           eventEmitter.emit("orderUpdated",orderChange)
           return res.status(201).
             json({status:true,updatedOrder:orderChange})
@@ -56,7 +64,7 @@ const dashboardLabelCtrl=()=>{
           {customerId:1,name:1,product:1,address:1,orderPrice:1,phone:1,email:1,paymentStatus:1,paymentType:1,
             status:1,createdAt:1
           },{
-            $sort:{createdAt:-1}
+            $sort:{createdAt:-1,updatedAt:-1}
           }
         )
         orders=await User.populate(orders,{
@@ -74,7 +82,7 @@ const dashboardLabelCtrl=()=>{
         const products=await Product.find({},{
           name:1,image:1,base_price:1,"ingridients.text":1
         },{
-          $sort:{createdAt:-1}
+          $sort:{createdAt:-1,updatedAt:-1}
         })
         return res.status(201).json({
           products,status:true
