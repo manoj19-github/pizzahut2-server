@@ -42,7 +42,7 @@ app.use(
     }),
     cookie: {
      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
-     secure: process.env.NODE_ENV === "production", // must be true if sameSite='none'
+     secure: false, // must be true if sameSite='none'
      maxAge:1000*60*60
    },
   })
