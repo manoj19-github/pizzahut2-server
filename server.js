@@ -27,28 +27,29 @@ const dashboardRoutes=require("./routes/admin/dashboardRoutes")
 const slideRoutes=require("./routes/slideRoutes")
 
 // middlewares
-app.set("trust proxy", 1)
-app.use(
-  session({
-    secret:process.env.COOKIE_SECRET,
-     resave: true,
-    saveUninitialized: false,
-    key:"User_id",
-    store:MongoStore.create({
-      mongoUrl:process.env.DB_URL,
-      autoRemove:"interval",
-      autoRemoveInterval:20,
-      collectionName:"mysession"
-    }),
-    cookie: {
-     sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
-     secure: false, // must be true if sameSite='none'
-     maxAge:1000*60*60
-   },
-  })
-)
+// app.set("trust proxy", 1)
+// app.use(
+//   session({
+//     secret:process.env.COOKIE_SECRET,
+//     resave: true,
+//     saveUninitialized: false,
+//     key:"User_id",
+//     ttl: 60 * 60 * 24 * 30,
+//     store:MongoStore.create({
+//       mongoUrl:process.env.DB_URL,
+//       autoRemove:"interval",
+//       autoRemoveInterval:20,
+//       collectionName:"mysession"
+//     }),
+//     cookie: {
+//      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
+//      secure: process.env.NODE_ENV === "production", // must be true if sameSite='none'
+//      maxAge:1000*60*60
+//    },
+//   })
+// )
 app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.session())
 app.use(
   cors({
     origin:process.env.CLIENT_SERVER,

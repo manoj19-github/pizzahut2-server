@@ -2,6 +2,26 @@ const passport=require("passport")
 const LocalStrategy=require("passport-local").Strategy;
 const GoogleStrategy=require("passport-google-oauth20").Strategy
 const User=require("../models/userModel")
+const JwtStrategy=require("passport-jwt").Strategy
+const ExtractJwt=require("passport-jwt").ExtractJwt
+var opts={}
+opts.jwtFromRequest=ExtractJwt.fromAuthHeaderAsBearerToken()
+opts.secretOrKey=process.env.JWT_SECRET_KEY
+
+passport.use(new JwtStrategy(opts,async(jwt_payload,done)=>{
+  try{
+    const userExists=await User.findById(jwt_payload.id).select("-password")
+    if(userExists){
+      return done(null,userExists)
+    }
+    return done(null,false)
+  }catch(err){
+    return done(err,false)
+  }
+}))
+
+
+
 
 passport.use(new LocalStrategy({usernameField:"email"},async(email,password,done)=>{
   try{
