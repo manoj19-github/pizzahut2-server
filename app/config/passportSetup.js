@@ -20,23 +20,6 @@ passport.use(new JwtStrategy(opts,async(jwt_payload,done)=>{
   }
 }))
 
-
-
-
-passport.use(new LocalStrategy({usernameField:"email"},async(email,password,done)=>{
-  try{
-    const user=await User.findOne({email})
-    if(!user) return done(null,false)
-    if(user.authenticate(password)){
-      done(null,user)
-    }else{
-      done(null,false)
-    }
-  }catch(err){
-    done(err,false)
-  }
-}))
-
 passport.use(new GoogleStrategy({
   callbackURL:process.env.GOOGLE_CALLBACK_URL,
   clientID:process.env.CLIENT_ID,
@@ -46,7 +29,6 @@ passport.use(new GoogleStrategy({
 
     const user=await User.findOne({googleId:profile.id})
     if(user){
-      console.log("google user",user)
       return done(null,user)
     }else{
       const newUser=await User.create({
