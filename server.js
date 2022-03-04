@@ -5,6 +5,7 @@ const passport=require("passport")
 const connDB=require("./app/config/dbConn")
 const MongoStore=require("connect-mongo")
 const Emitter=require("events")
+const cookieParser=require("cookie-parser")
 
 
 
@@ -59,6 +60,7 @@ app.use(
 );
 
 app.use(bodyParser.json())
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(morgan("dev"))
 app.use(helmet())
@@ -122,4 +124,8 @@ eventEmitter.on("orderPlaced",(orderData)=>{
 
 eventEmitter.on("paymentUpdated",(data)=>{
   io.to(`order_${data.id}`).emit("paymentUpdated",data)
+})
+eventEmitter.on("productAdded",(newProduct)=>{
+  console.log("new product added")
+  io.to("adminRoom").emit("productAdded",newProduct)
 })

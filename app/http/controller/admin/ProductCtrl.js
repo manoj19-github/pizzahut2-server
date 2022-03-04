@@ -4,11 +4,13 @@ const productCtrl=()=>{
     return{
       async addOrUpdate(req,res){
         try{
+          const eventEmitter=req.app.get("eventEmitter")
           const {name,base_price,sizes,ingridients,details}=req.body
           if(req.body?.updateId){
               const updateProduct=await Product.findByIdAndUpdate(updateId,{
                 name,base_price,sizes,ingridients,details
               })
+              eventEmitter.emit("productAdded",updateProduct)
               return res.status(201).json({
                 status:true,
                 message:"successfully updated",
@@ -18,6 +20,7 @@ const productCtrl=()=>{
               const newProduct=await Product.create({
                 name,base_price,sizes,ingridients,details
               })
+              eventEmitter.emit("productAdded",newProduct)
               return res.status(201).json({
                 status:true,
                 message:"successfully inserted",
